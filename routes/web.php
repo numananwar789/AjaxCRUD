@@ -15,3 +15,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/',[TodoController::class,'index'])->name('index');
+Route::post('todos/{todo}/edit',[TodoController::class,'edit'])->name('edit');
+Route::post('/todos/store',[TodoController::class,'store'])->name('store');

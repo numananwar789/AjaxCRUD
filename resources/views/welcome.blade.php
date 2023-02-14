@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Laravel Ajax CRUD</title>
 
     <!-- Fonts -->
@@ -35,11 +35,11 @@
             </thead>
             <tbody id="list_todo">
                 @foreach ($todos as $todo)
-                    <tr id="list_todo_{{ $todo->id }}">
+                    <tr id="row_todo_{{ $todo->id }}">
                         <td>{{ $todo->id }}</td>
                         <td>{{ $todo->name }}</td>
-                        <td>
-                            <button class="btn btn-success btn-sm" type="button" id="update_todo"
+                        <td class="">
+                            <button class="btn btn-success btn-sm" type="button" id="edit_todo"
                                 data-id="{{ $todo->id }}">
                                 Edit
                             </button>
@@ -58,30 +58,89 @@
     <div class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static" id="modal_todo">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
+                <form action="" method="POST" id="form_todo">
 
-                <!-- Modal Header -->
-                <div class="modal-header">
-                    <h4 class="modal-title">Modal Heading</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="modal_title"></h4>
+                    </div>
 
-                <!-- Modal body -->
-                <div class="modal-body">
-                    Modal body..
-                </div>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <input type="hidden" id="id" name="id">
+                        <div class="mb-3">
+                            <label for="recipient-name" class="col-form-label">Name:</label>
+                            <input name="name" type="text" class="form-control" id="name_todo"
+                                placeholder="Enter Todo Name">
+                        </div>
+                    </div>
 
-                <!-- Modal footer -->
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                    </div>
 
+                </form>
             </div>
         </div>
     </div>
 
     <script>
+        $(document).ready(function() {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+        });
+
         $('#add_todo').on('click', function() {
+            $('#form-todo').trigger('reset');
+            $('#modal_title').html('Add todo');
             $('#modal_todo').modal('show');
+        });
+
+        $('body').on('click', '#edit_todo', function(e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            // ajax code
+            $.post('todos/' + id + '/edit', function(res) {
+                $('#modal_title').html('Edit todo');
+                $('#id').val(res.id);
+                $('#name_todo').val(res.name);
+                $('#modal_todo').modal('show');
+            });
+        });
+
+        $('form').on('submit', function(e) {
+            e.preventDefault();
+            var name = $('#name_todo').val();
+            var id = $('#id').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/todos/store',
+                data: $('#form_todo').serialize(),
+                type: 'POST',
+            }).done(function(res) {
+                var row = '<tr id="row_todo' + res.id + '">';
+                row += '<td>' + res.id + '</td>';
+                row += '<td>' + res.name + '</td>';
+                row += '<td>' + '<button class="btn btn-success btn-sm" type="button" id="edit_todo"' +
+                    res.id + '> Edit </button>' + ' ' +
+                    '<button class="btn btn-danger btn-sm" type="button" id="delete_todo"' +
+                    res.id + '> Delete </button>' + '</td>';
+
+                if ($('#id').val()) {
+                    $('#row_todo_' + res.id).replaceWith(row);
+                } else {
+                    $('#list_todo').prepend(row);
+                }
+
+                $('#form').trigger('reset');
+                $('#modal_todo').modal('hide');
+            });
         });
     </script>
 </body>
