@@ -7,12 +7,21 @@ use Illuminate\Http\Request;
 
 class TodoController extends Controller
 {
+    /**
+     * Display view of todo.
+     */
+    public function index()
+    {
+        return view('welcome',['todos' => Todo::orderby('id', 'desc')->get()]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
     public function todo(Request $request)
     {
         $todo = Todo::create([
-            'name' => 'John Doe',
-            'email' => 'john@example.com',
-            'password' => bcrypt('password'),
+            'name' => $request->name,
         ]);
     }
 }

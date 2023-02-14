@@ -28,25 +28,19 @@
         <table class="table table-bordered mt-4">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>First name</th>
-                    <th>Last name</th>
-                    <th>Username</th>
+                    <th>Sr No#</th>
+                    <th>To do Name</th>
+                    <th>Action</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                </tr>
+            <tbody id="list_todo">
+                @foreach ($todos as $todo)
+                    <tr id="list_todo_{{ $todo->id }}">
+                        <td>{{ $todo->id }}</td>
+                        <td>{{ $todo->name }}</td>
+                        <td>Action</td>
+                    </tr>
+                @endforeach
             </tbody>
         </table>
     </div>
