@@ -101,16 +101,33 @@
             $('#modal_todo').modal('show');
         });
 
+        // ajax code for editing todo
         $('body').on('click', '#edit_todo', function(e) {
             e.preventDefault();
             var id = $(this).data('id');
-            // ajax code
             $.post('todos/' + id + '/edit', function(res) {
                 $('#modal_title').html('Edit todo');
                 $('#id').val(res.id);
                 $('#name_todo').val(res.name);
                 $('#modal_todo').modal('show');
             });
+        });
+
+        // ajax code for deleting todo
+        $('body').on('click', '#delete_todo', function(e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            $.delete('todos/' + id + '/delete', function(res) {
+                $('#id').val(res.id);
+                confirm('Are you sure you want to delete this todo?');
+            });
+
+            $ajax({
+                type: 'DELETE',
+                url: 'todos/' + id + '/delete',
+            }.done(function(res) {
+                $('#row_todo_' + id).remove();
+            }));
         });
 
         $('form').on('submit', function(e) {

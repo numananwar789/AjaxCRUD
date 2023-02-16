@@ -16,32 +16,8 @@ class TodoController extends Controller
     }
 
     /**
-     * Function for creating a new resource.
-     */
-    public function todo(Todo $todo)
-    {
-        $add_todo = Todo::create([
-            'name' => $todo->name,
-        ]);
-    }
-
-    /**
-     * Function for editing a resource.
-     */
-    public function edit(Todo $todo)
-    {
-        // $edit_todo = Todo::find($todo->id);
-        return response()->json($todo);
-    }
-
-    /**
-     * Function for deleting a resource.
-     */
-    public function delete(Todo $todo)
-    {
-        $delete_todo = Todo::find($todo->id);
-    }
-
+     * Function for creating and updating a resource.
+    */
     public function store()
     {
         $todo = Todo::updateOrCreate(
@@ -50,5 +26,22 @@ class TodoController extends Controller
         );
 
         return response()->json($todo);
+    }
+
+    /**
+     * Function for editing a resource.
+    */
+
+    function edit(Todo $todo) {
+        return response()->json($todo);
+    }
+
+    /**
+     * Function for deleting a resource.
+     */
+    public function delete(Todo $todo)
+    {
+        $todo->delete();
+        return response()->json('success');
     }
 }
