@@ -34,22 +34,28 @@
                 </tr>
             </thead>
             <tbody id="list_todo">
-                @foreach ($todos as $todo)
-                    <tr id="row_todo_{{ $todo->id }}">
-                        <td>{{ $todo->id }}</td>
-                        <td>{{ $todo->name }}</td>
-                        <td class="">
-                            <button class="btn btn-success btn-sm" type="button" id="edit_todo"
-                                data-id="{{ $todo->id }}">
-                                Edit
-                            </button>
-                            <button class="btn btn-danger btn-sm" type="button" id="delete_todo"
-                                data-id="{{ $todo->id }}">
-                                Delete
-                            </button>
-                        </td>
+                @if ($todos->count() <= 0)
+                    <tr class="text-center">
+                        <td colspan="3">No todos</td>
                     </tr>
-                @endforeach
+                @else
+                    @foreach ($todos as $todo)
+                        <tr id="row_todo_{{ $todo->id }}">
+                            <td>{{ $todo->id }}</td>
+                            <td>{{ $todo->name }}</td>
+                            <td class="">
+                                <button class="btn btn-success btn-sm" type="button" id="edit_todo"
+                                    data-id="{{ $todo->id }}">
+                                    Edit
+                                </button>
+                                <button class="btn btn-danger btn-sm" type="button" id="delete_todo"
+                                    data-id="{{ $todo->id }}">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    @endforeach
+                @endif
             </tbody>
         </table>
     </div>
@@ -105,7 +111,7 @@
         $('body').on('click', '#edit_todo', function(e) {
             e.preventDefault();
             var id = $(this).data('id');
-            $.post('todos/' + id + '/edit', function(res) {
+            $.post('todos/edit/' + id, function(res) {
                 $('#modal_title').html('Edit todo');
                 $('#id').val(res.id);
                 $('#name_todo').val(res.name);
@@ -114,20 +120,16 @@
         });
 
         // ajax code for deleting todo
-        $('body').on('click', '#delete_todo', function(e) {
-            e.preventDefault();
+        $('body').on('click', '#delete_todo', function() {
             var id = $(this).data('id');
-            $.delete('todos/' + id + '/delete', function(res) {
-                $('#id').val(res.id);
-                confirm('Are you sure you want to delete this todo?');
-            });
+            confirm('Are you sure you want to delete this todo?');
 
-            $ajax({
+            $.ajax({
                 type: 'DELETE',
-                url: 'todos/' + id + '/delete',
-            }.done(function(res) {
+                url: 'todos/delete/' + id,
+            }).done(function(res) {
                 $('#row_todo_' + id).remove();
-            }));
+            });
         });
 
         $('form').on('submit', function(e) {
